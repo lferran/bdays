@@ -1,7 +1,9 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Date
+from asyncom import OMBase
 
-Base = declarative_base()
+
+Base = declarative_base(cls=OMBase)
 
 
 class Birthday(Base):

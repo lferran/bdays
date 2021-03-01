@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 from typing import Optional
 from bdays import db
 from bdays.models import Birthday
@@ -22,12 +23,6 @@ class BirthdayType(BaseModel):
             month=obj.month,
             year=obj.year
         )
-
-    def to_object(self) -> Birthday:
-        return Birthday()
-
-
-
 
 
 class ListBDaysSchema(BaseModel):
