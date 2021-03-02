@@ -10,21 +10,11 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
-async def test_create_birthday(backend):
-    date = datetime.date(1991, 11, 12)
-    bday = await create_bday(name="Foo", date=date)
-    assert bday.id == 1
-    assert bday.name == "Foo"
-    assert bday.date == date
-    assert bday.day == date.day
-    assert bday.month == date.month
-    assert bday.year == date.year
-
-
 async def test_get_birthday(backend):
     date = datetime.date(1991, 11, 12)
-    await create_bday(name="Foo", date=date)
-    bday = await get_bday_by_id(1)
+    bday = await create_bday(name="Foo", date=date)
+
+    bday = await get_bday_by_id(bday.id)
     assert bday.id == 1
     assert bday.name == "Foo"
     assert bday.date == date
@@ -34,6 +24,17 @@ async def test_get_birthday(backend):
 
     # Check that if id is not found, returns None
     assert await get_bday_by_id(12314) is None
+
+
+async def test_create_birthday(backend):
+    date = datetime.date(1991, 11, 12)
+    bday = await create_bday(name="Foo", date=date)
+    assert bday.id == 1
+    assert bday.name == "Foo"
+    assert bday.date == date
+    assert bday.day == date.day
+    assert bday.month == date.month
+    assert bday.year == date.year
 
 
 async def test_update_birthday(backend):

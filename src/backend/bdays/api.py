@@ -25,9 +25,15 @@ class BirthdayType(BaseModel):
         )
 
 
-class ListBDaysSchema(BaseModel):
-    size: Optional[int] = 10
+class PaginationSchema(BaseModel):
+    limit: Optional[int] = 10
     offset: Optional[int] = None
+
+    @validator('limit')
+    def limit_has_a_limit(cls, v):
+        if limit < 0 or limit > 100:
+            raise ValueError('Limit must be between 1 and 100')
+        return v
 
 
 @app.get("/{bday_id}")
@@ -37,14 +43,14 @@ async def get_bday(bday_id: str):
 
 
 @app.get("/list")
-async def list_bdays(schema: ListBDaysSchema):
+async def list_bdays(pagination: PaginationSchema):
     return [BirthdayType.from_object(bday) async for bday in db.list_bdays(size=schema.size, offset=schema.offset)]
 
 
 @app.get("/search")
-async def search_bdays(name: str):
+async def search_bdays(term: str, pagination: PaginationSchema):
     return [
-        BirthdayType.from_object(bday) async for bday in await db.search_bdays_by_name(name)
+        BirthdayType.from_object(bday) async for bday in await db.search_bdays_by_name(term)
     ]
 
 @app.put("/")

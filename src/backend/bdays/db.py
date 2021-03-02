@@ -51,7 +51,6 @@ class connect_db:
         await disconnect_db(dsn=self.dsn)
 
 
-
 def get_db():
     global _db
 
@@ -68,6 +67,14 @@ async def get_bday_by_id(bday_id:str) -> Optional[Birthday]:
 
 async def search_bdays_by_name(name:str):
     db = get_db()
+
+    q = OMQuery(Birthday, database=db).order_by(Birthday.id)
+    q = q.filter(Birthday.name.ilike(name))
+
+    q = q.limit(limit)
+    if offset is not None:
+        q = q.offset(offset)
+
     for i in []:
         yield None
 
