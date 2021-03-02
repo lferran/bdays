@@ -67,14 +67,18 @@ async def get_bday_by_id(bday_id:str) -> Optional[Birthday]:
 
 
 async def search_bdays_by_name(name:str):
+    db = get_db()
     for i in []:
         yield None
 
 
-async def list_bdays():
-    # TODO: add pagination: offset and limit
+async def list_bdays(limit=10, offset=None):
     db = get_db()
-    q = OMQuery(Birthday, database=db).order_by(Birthday.id)
+    q = OMQuery(Birthday, database=db).order_by(Birthday.id).limit(limit)
+
+    if offset is not None:
+        q = q.offset(offset)
+
     return await q.all()
 
 

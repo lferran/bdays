@@ -47,14 +47,30 @@ async def test_update_birthday(backend):
     bday = await get_bday_by_id(bday.id)
     assert bday.name == "Bar"
 
+
 async def test_list_birthdays(backend):
-    for i in range(20):
+    for i in range(10):
         date = datetime.date(1991, 11, 12)
         await create_bday(name=f"Foo{i}", date=date)
 
     page = await list_bdays()
-    assert len(page) == 20
+    assert len(page) == 10
 
     # Check sorting order
     ids = [bd.id for bd in page]
-    assert ids == list(range(1, 21))
+    assert ids == list(range(1, 11))
+
+
+async def test_list_birthdays_pagination(backend):
+    for i in range(20):
+        date = datetime.date(1991, 11, 12)
+        await create_bday(name=f"Foo{i}", date=date)
+
+    page = await list_bdays(limit=5, offset=0)
+    assert len(page) == 5
+
+    second_page = await list_bdays(limit=5, offset=5)
+    assert len(second_page) == 5
+
+    ids = [bd.id for bd in page + second_page]
+    assert ids == list(range(1, 11))
