@@ -9,6 +9,7 @@ from bdays.models import Base
 from typing import Optional
 import datetime
 from asyncom import OMBase
+from sqlalchemy import or_
 
 _db = None
 
@@ -65,18 +66,21 @@ async def get_bday_by_id(bday_id:str) -> Optional[Birthday]:
     return bday
 
 
-async def search_bdays_by_name(name:str):
+async def search_bdays_by_name(search_term: str, limit=10, offset=None):
     db = get_db()
-
     q = OMQuery(Birthday, database=db).order_by(Birthday.id)
-    q = q.filter(Birthday.name.ilike(name))
-
+    or_terms = []
+    for term in search_term.split(" ")[:5]:  # up to 5 terms
+        term = term.lower().rstrip().lstrip()
+        or_terms.extend([
+            Birthday.name.ilike(f"%{term}%"),
+            Birthday.surname.ilike(f"%{term}%")
+        ])
+    q = q.filter(or_(*or_terms))
     q = q.limit(limit)
     if offset is not None:
         q = q.offset(offset)
-
-    for i in []:
-        yield None
+    return await q.all()
 
 
 async def list_bdays(limit=10, offset=None):
@@ -89,9 +93,9 @@ async def list_bdays(limit=10, offset=None):
     return await q.all()
 
 
-async def create_bday(name: str, date: datetime.date) -> Birthday:
+async def create_bday(name: str, date: datetime.date, surname=None) -> Birthday:
     db = get_db()
-    bday = Birthday(name=name, date=date, day=date.day, month=date.month, year=date.year)
+    bday = Birthday(name=name, surname=surname, date=date, day=date.day, month=date.month, year=date.year)
     await db.add(bday)
     return bday
 

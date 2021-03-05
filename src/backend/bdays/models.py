@@ -11,10 +11,14 @@ class Birthday(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    surname = Column(String)
     date = Column(Date)
     day = Column(Integer)
     month = Column(Integer)
     year = Column(Integer)
 
     def __repr__(self):
-        return f"<Birthday(name={self.name}, date={self.date})>"
+        display_name = self.name
+        if self.surname:
+            display_name += f" {self.surname}"
+        return f"<Birthday(name={display_name}, date={self.date})>"

@@ -1,6 +1,7 @@
 from bdays.db import get_db
 from bdays.db import create_bday
 from bdays.db import get_bday_by_id
+from bdays.db import search_bdays_by_name
 from bdays.db import update_bday
 from bdays.db import list_bdays
 from bdays.models import Birthday
@@ -75,3 +76,16 @@ async def test_list_birthdays_pagination(backend):
 
     ids = [bd.id for bd in page + second_page]
     assert ids == list(range(1, 11))
+
+
+async def test_search_by_name(backend):
+    date = datetime.date(1991, 11, 12)
+    await create_bday(name="John", surname="Doe", date=date)
+
+    for term in ("john", "doe", "JoHn DoE", "DoE"):
+        results = await search_bdays_by_name(term)
+        try:
+            assert len(results) > 0
+        except AssertionError:
+            import pdb; pdb.set_trace()
+            pass

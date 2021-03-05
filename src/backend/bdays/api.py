@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from pydantic import validator
 from typing import Optional
 from bdays import db
 from bdays.models import Birthday
@@ -15,7 +16,7 @@ class BirthdayType(BaseModel):
     year: int
 
     @classmethod
-    def from_object(cls, obj: Birthday) -> BirthdayType:
+    def from_object(cls, obj: Birthday):
         return cls(
             id=obj.id,
             name=obj.name,
@@ -30,10 +31,10 @@ class PaginationSchema(BaseModel):
     offset: Optional[int] = None
 
     @validator('limit')
-    def limit_has_a_limit(cls, v):
+    def limit_has_a_limit(cls, limit):
         if limit < 0 or limit > 100:
             raise ValueError('Limit must be between 1 and 100')
-        return v
+        return limit
 
 
 @app.get("/{bday_id}")
@@ -44,13 +45,13 @@ async def get_bday(bday_id: str):
 
 @app.get("/list")
 async def list_bdays(pagination: PaginationSchema):
-    return [BirthdayType.from_object(bday) async for bday in db.list_bdays(size=schema.size, offset=schema.offset)]
+    return [BirthdayType.from_object(bday) async for bday in db.list_bdays(**(pagination.dict()))]
 
 
 @app.get("/search")
 async def search_bdays(term: str, pagination: PaginationSchema):
     return [
-        BirthdayType.from_object(bday) async for bday in await db.search_bdays_by_name(term)
+        BirthdayType.from_object(bday) async for bday in await db.search_bdays_by_name(term, **(pagination.dict()))
     ]
 
 @app.put("/")
