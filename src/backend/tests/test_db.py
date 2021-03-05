@@ -84,8 +84,4 @@ async def test_search_by_name(backend):
 
     for term in ("john", "doe", "JoHn DoE", "DoE"):
         results = await search_bdays_by_name(term)
-        try:
-            assert len(results) > 0
-        except AssertionError:
-            import pdb; pdb.set_trace()
-            pass
+        assert len(results) > 0
