@@ -5,6 +5,8 @@ from bdays.models import Birthday
 from sqlalchemy import create_engine
 import pytest
 from sqlalchemy import delete
+from fastapi.testclient import TestClient
+from bdays.api import app
 
 
 async def delete_test_data(dsn):
@@ -38,3 +40,9 @@ async def backend(pg):
 
     async with empty_test_db(dsn):
         yield dsn
+
+
+@pytest.fixture(scope="function")
+def client(backend):
+    client = TestClient(app)
+    yield client

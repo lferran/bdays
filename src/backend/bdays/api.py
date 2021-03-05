@@ -4,13 +4,15 @@ from pydantic import validator
 from typing import Optional
 from bdays import db
 from bdays.models import Birthday
+import datetime
 
 app = FastAPI()
 
 
-class BirthdayType(BaseModel):
-    id: Optional[str]
+class BirthdaySchema(BaseModel):
+    id: Optional[int]
     name: str
+    surname: Optional[str]
     day: int
     month: int
     year: int
@@ -32,29 +34,41 @@ class PaginationSchema(BaseModel):
 
     @validator('limit')
     def limit_has_a_limit(cls, limit):
+        if limit is None:
+            return
+
         if limit < 0 or limit > 100:
             raise ValueError('Limit must be between 1 and 100')
         return limit
 
 
-@app.get("/{bday_id}")
-async def get_bday(bday_id: str):
+@app.get("/bday/{bday_id}")
+async def get_bday(bday_id: int):
     bday: Birthday = await db.get_bday_by_id(bday_id)
-    return BirthdayType.from_object(bday)
+    return BirthdaySchema.from_object(bday)
 
 
-@app.get("/list")
-async def list_bdays(pagination: PaginationSchema):
-    return [BirthdayType.from_object(bday) async for bday in db.list_bdays(**(pagination.dict()))]
+@app.get("/bdays/list")
+async def list_bdays(pagination: Optional[PaginationSchema] = None):
+    if pagination is None:
+        pagination = {}
+    else:
+        pagination = pagination.dict()
+    return [BirthdaySchema.from_object(bday) for bday in await db.list_bdays(**pagination)]
 
 
-@app.get("/search")
-async def search_bdays(term: str, pagination: PaginationSchema):
+@app.get("/bdays/search")
+async def search_bdays(term: str, pagination: Optional[PaginationSchema] = None):
+    if pagination is None:
+        pagination = {}
+    else:
+        pagination = pagination.dict()
     return [
-        BirthdayType.from_object(bday) async for bday in await db.search_bdays_by_name(term, **(pagination.dict()))
+        BirthdaySchema.from_object(bday) for bday in await db.search_bdays_by_name(term, **pagination)
     ]
 
-@app.put("/")
-async def put_bday(bday: BirthdayType):
-    await db.put_bday(bday)
-    return bday
+
+@app.post("/bday")
+async def create_bday(bday: BirthdaySchema):
+    bday = await db.create_bday(name=bday.name, surname=bday.surname, date=datetime.date(bday.year, bday.month, bday.day))
+    return BirthdaySchema.from_object(bday)
