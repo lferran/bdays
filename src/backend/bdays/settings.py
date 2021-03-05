@@ -1,10 +1,12 @@
-from pydantic import BaseModel
 import json
+
+from pydantic import BaseModel
 
 _cached_settings = None
 
 
 default_config = {}
+
 
 class Settings(BaseModel):
     dsn: str
@@ -22,7 +24,7 @@ def load_settings(config_file: str) -> Settings:
     default.update(config_file_options)
     default.update(cli_options)
 
-    settings =  Settings.parse_obj(default)
+    settings = Settings.parse_obj(default)
 
     _cached_settings = settings
 

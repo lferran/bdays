@@ -1,10 +1,11 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from pydantic import validator
+import datetime
 from typing import Optional
+
+from fastapi import FastAPI
+from pydantic import BaseModel, validator
+
 from bdays import db
 from bdays.models import Birthday
-import datetime
 
 app = FastAPI()
 
@@ -20,11 +21,7 @@ class BirthdaySchema(BaseModel):
     @classmethod
     def from_object(cls, obj: Birthday):
         return cls(
-            id=obj.id,
-            name=obj.name,
-            day=obj.day,
-            month=obj.month,
-            year=obj.year
+            id=obj.id, name=obj.name, day=obj.day, month=obj.month, year=obj.year
         )
 
 
@@ -32,13 +29,13 @@ class PaginationSchema(BaseModel):
     limit: Optional[int] = 10
     offset: Optional[int] = None
 
-    @validator('limit')
+    @validator("limit")
     def limit_has_a_limit(cls, limit):
         if limit is None:
             return
 
         if limit < 0 or limit > 100:
-            raise ValueError('Limit must be between 1 and 100')
+            raise ValueError("Limit must be between 1 and 100")
         return limit
 
 
@@ -54,7 +51,9 @@ async def list_bdays(pagination: Optional[PaginationSchema] = None):
         pagination = {}
     else:
         pagination = pagination.dict()
-    return [BirthdaySchema.from_object(bday) for bday in await db.list_bdays(**pagination)]
+    return [
+        BirthdaySchema.from_object(bday) for bday in await db.list_bdays(**pagination)
+    ]
 
 
 @app.get("/bdays/search")
@@ -64,11 +63,16 @@ async def search_bdays(term: str, pagination: Optional[PaginationSchema] = None)
     else:
         pagination = pagination.dict()
     return [
-        BirthdaySchema.from_object(bday) for bday in await db.search_bdays_by_name(term, **pagination)
+        BirthdaySchema.from_object(bday)
+        for bday in await db.search_bdays_by_name(term, **pagination)
     ]
 
 
 @app.post("/bday")
 async def create_bday(bday: BirthdaySchema):
-    bday = await db.create_bday(name=bday.name, surname=bday.surname, date=datetime.date(bday.year, bday.month, bday.day))
+    bday = await db.create_bday(
+        name=bday.name,
+        surname=bday.surname,
+        date=datetime.date(bday.year, bday.month, bday.day),
+    )
     return BirthdaySchema.from_object(bday)
