@@ -1,12 +1,14 @@
-from bdays.db import connect_db
 import pytest
 from fastapi.testclient import TestClient
+
 from bdays.api import app
+from bdays.db import connect_db
 
 
 @pytest.fixture(scope="function")
 def db():
     import pytest_docker_fixtures
+
     host, port = pytest_docker_fixtures.pg_image.run()
     yield host, port
     pytest_docker_fixtures.pg_image.stop()

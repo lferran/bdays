@@ -1,5 +1,6 @@
-from bdays.api import BirthdaySchema
 import json
+
+from bdays.api import BirthdaySchema
 
 
 def test_create_and_get_birthday(client):
@@ -54,9 +55,7 @@ def test_list_birthdays(client):
     offset = None
     total_bdays = []
     while True:
-        payload = {
-            "limit": 2
-        }
+        payload = {"limit": 2}
         if offset is not None:
             payload["offset"] = offset
 

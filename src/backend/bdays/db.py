@@ -1,10 +1,9 @@
 import datetime
 from typing import Optional
 
-from asyncom import OMBase, OMDatabase, OMQuery
+from asyncom import OMDatabase, OMQuery
 from databases import DatabaseURL
 from sqlalchemy import create_engine, or_
-from sqlalchemy.orm import Query
 
 from bdays.models import Base, Birthday
 from bdays.settings import get_settings
@@ -20,7 +19,7 @@ async def setup_db(dsn=None):
         if dsn is None:
             # Get dsn from settings
             settings = get_settings()
-            dsn = settins["dsn"]
+            dsn = settings["dsn"]
 
         # Create tables
         engine = create_engine(dsn)
