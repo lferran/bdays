@@ -27,7 +27,6 @@ async def setup_db(dsn=None):
         Base.metadata.create_all(engine)
 
         _db = OMDatabase(DatabaseURL(dsn))
-
         await _db.connect()
 
 
