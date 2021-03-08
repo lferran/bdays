@@ -1,44 +1,24 @@
-from bdays.db import connect_db
-from bdays.db import get_db
-from bdays.models import Base
-from bdays.models import Birthday
-from sqlalchemy import create_engine
 import pytest
-from sqlalchemy import delete
 from fastapi.testclient import TestClient
+
 from bdays.api import app
-
-
-async def delete_test_data(dsn):
-    """this doesn't work right now..."""
-    db = get_db()
-    # Delete all test data after every test
-    engine = create_engine(dsn)
-    meta = Base.metadata
-    for tbl in reversed(meta.sorted_tables):
-        # engine.execute(tbl.delete())
-        stmt = (
-            delete(tbl).
-            where(True)
-        )
-        await db.execute(stmt)
-
-
-class empty_test_db(connect_db):
-    async def __aexit__(self, exc_type, exc, tb):
-        # TODO: need to figure out a way to clean the bdays table at
-        # the end of every test so that there is no garbage data
-        # across tests.
-        await delete_test_data(self.dsn)
-        await super().__aexit__(exc_type, exc, tb)
+from bdays.db import connect_db
 
 
 @pytest.fixture(scope="function")
-async def backend(pg):
-    pg_user, pg_password = pg
-    dsn = f"postgres://postgres:@{pg_user}:{pg_password}/guillotina?sslmode=disable"
+def db():
+    import pytest_docker_fixtures
 
-    async with empty_test_db(dsn):
+    host, port = pytest_docker_fixtures.pg_image.run()
+    yield host, port
+    pytest_docker_fixtures.pg_image.stop()
+
+
+@pytest.fixture(scope="function")
+async def backend(db):
+    host, port = db
+    dsn = f"postgres://postgres:@{host}:{port}/guillotina?sslmode=disable"
+    async with connect_db(dsn):
         yield dsn
 
 

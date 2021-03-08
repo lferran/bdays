@@ -1,3 +1,6 @@
 pytest-asyncio
 pytest
 pytest-docker-fixtures
+black
+isort
+flake8

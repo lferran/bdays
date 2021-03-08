@@ -1,0 +1,16 @@
+bdaysserver:
+  tty: true
+  stdin_open: true
+  build: "."
+  links:
+    - postgresql
+  ports:
+    - 8080:8080
+postgresql:
+  image: postgres:9.6.16
+  container_name: bdays-pg
+  ports:
+    - 5432:5432
+  environment:
+    - POSTGRES_DB="bdays"
+    - POSTGRES_USER="postgres"
