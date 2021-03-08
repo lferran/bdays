@@ -19,7 +19,7 @@ async def setup_db(dsn=None):
         if dsn is None:
             # Get dsn from settings
             settings = get_settings()
-            dsn = settings["dsn"]
+            dsn = settings.dsn
 
         # Create tables
         engine = create_engine(dsn)
@@ -48,22 +48,24 @@ class connect_db:
         await disconnect_db(dsn=self.dsn)
 
 
-def get_db():
+async def get_db():
+    "Assumes setup_db has been run"
     global _db
 
     if _db is None:
-        raise ValueError("database not setup")
+        await setup_db()
+
     return _db
 
 
 async def get_bday_by_id(bday_id: str) -> Optional[Birthday]:
-    db = get_db()
+    db = await get_db()
     bday = await db.query(Birthday).filter(Birthday.id == bday_id).get(1)
     return bday
 
 
 async def search_bdays_by_name(search_term: str, limit=10, offset=None):
-    db = get_db()
+    db = await get_db()
     q = OMQuery(Birthday, database=db).order_by(Birthday.id)
     or_terms = []
     for term in search_term.split(" ")[:5]:  # up to 5 terms
@@ -79,7 +81,7 @@ async def search_bdays_by_name(search_term: str, limit=10, offset=None):
 
 
 async def list_bdays(limit=10, offset=None):
-    db = get_db()
+    db = await get_db()
     q = OMQuery(Birthday, database=db).order_by(Birthday.id).limit(limit)
 
     if offset is not None:
@@ -89,7 +91,7 @@ async def list_bdays(limit=10, offset=None):
 
 
 async def create_bday(name: str, date: datetime.date, surname=None) -> Birthday:
-    db = get_db()
+    db = await get_db()
     bday = Birthday(
         name=name,
         surname=surname,
@@ -103,5 +105,5 @@ async def create_bday(name: str, date: datetime.date, surname=None) -> Birthday:
 
 
 async def update_bday(bday: Birthday) -> None:
-    db = get_db()
+    db = await get_db()
     await db.update(bday)

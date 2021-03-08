@@ -76,3 +76,8 @@ async def create_bday(bday: BirthdaySchema):
         date=datetime.date(bday.year, bday.month, bday.day),
     )
     return BirthdaySchema.from_object(bday)
+
+
+@app.get("/health")
+def ping():
+    return {"pong": True}
