@@ -64,6 +64,11 @@ async def get_bday_by_id(bday_id: str) -> Optional[Birthday]:
     return bday
 
 
+async def delete_bday_by_id(bday_id: str) -> None:
+    db = await get_db()
+    await db.query(Birthday).filter(Birthday.id == bday_id).delete()
+
+
 async def search_bdays_by_name(search_term: str, limit=10, offset=None):
     db = await get_db()
     q = OMQuery(Birthday, database=db).order_by(Birthday.id)

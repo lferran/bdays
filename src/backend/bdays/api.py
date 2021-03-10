@@ -78,6 +78,11 @@ async def create_bday(bday: BirthdaySchema):
     return BirthdaySchema.from_object(bday)
 
 
+@app.delete("/bday/{bday_id}")
+async def delete_bday():
+    await db.delete_bday_by_id(bday_id)
+
+
 @app.get("/health")
 def ping():
     return {"pong": True}

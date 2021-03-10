@@ -21,30 +21,24 @@
 </template>
 
 <script>
+
+import { BdaysAPI } from './components/BdaysAPI.js';
+
 export default {
+  created() {
+    this.loadFriendsFromBackend();
+  },
   data() {
     return {
-      birthdays: [
-        {
-          frontId: 'paulallamas',
-          id: 1,
-          name: 'Paula Llamas',
-          day: 6,
-          month: 5,
-          year: 1994,
-        },
-        {
-          frontId: 'ferranllamas',
-          id: 2,
-          name: 'Ferran Llamas',
-          day: 12,
-          month: 11,
-          year: 1991,
-        },
-      ],
+      baseUrl: 'http://localhost:8080/',
+      birthdays: [],
     };
   },
   methods: {
+    loadFriendsFromBackend() {
+      const api = new BdaysAPI(this.baseUrl);
+      this.birthdays = api.listAll();
+    },
     addBirthday(name, day, month, year) {
       const newBirthday = {
         frontId: new Date().toISOString(),
@@ -53,11 +47,22 @@ export default {
         month: month,
         year: year,
       };
+      const api = new BdaysAPI(this.baseUrl);
+      const bday = api.add(
+        newBirthday.name,
+        newBirthday.year,
+        newBirthday.day,
+        newBirthday.month
+      );
+      newBirthday.id = bday['id'];
       this.birthdays.push(newBirthday);
     },
-    deleteBirthday(birthdayFrontId) {
+    deleteBirthday(frontId) {
+      const bday = this.birthdays.find((b) => b.frontId == frontId);
+      const api = new BdaysAPI(this.baseUrl);
+      api.delete(bday.id);
       this.birthdays = this.birthdays.filter(
-        (birthday) => birthday.frontId !== birthdayFrontId
+        (birthday) => birthday.frontId !== frontId
       );
     },
   },
