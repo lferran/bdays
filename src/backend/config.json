@@ -1,4 +1,4 @@
 {
-    "dsn": "postgres://postgres:@pg:5432/guillotina?sslmode=disable",
+    "dsn": "postgres://postgres:@pg:5432/bdays?sslmode=disable",
     "port": 8080
 }
