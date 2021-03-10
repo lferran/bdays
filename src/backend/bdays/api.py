@@ -7,7 +7,7 @@ from pydantic import BaseModel, validator
 from bdays import db
 from bdays.models import Birthday
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.exceptions import RequestValidationError
 
 app = FastAPI()
 
@@ -80,10 +80,15 @@ async def search_bdays(term: str, pagination: Optional[PaginationSchema] = None)
 
 @app.post("/bday")
 async def create_bday(bday: BirthdaySchema):
+    try:
+        date = datetime.date(bday.year, bday.month, bday.day)
+    except ValueError as ex:
+        raise RequestValidationError from ex
+
     bday = await db.create_bday(
         name=bday.name,
         surname=bday.surname,
-        date=datetime.date(bday.year, bday.month, bday.day),
+        date=date
     )
     return BirthdaySchema.from_object(bday)
 

@@ -21,7 +21,6 @@
 </template>
 
 <script>
-
 import { BdaysAPI } from './components/BdaysAPI.js';
 
 export default {
@@ -31,7 +30,7 @@ export default {
   data() {
     return {
       baseUrl: 'http://localhost:8080/',
-      birthdays: [],
+      birthdays: []
     };
   },
   methods: {
@@ -45,27 +44,27 @@ export default {
         name: name,
         day: day,
         month: month,
-        year: year,
+        year: year
       };
       const api = new BdaysAPI(this.baseUrl);
       const bday = api.add(
         newBirthday.name,
-        newBirthday.year,
         newBirthday.day,
-        newBirthday.month
+        newBirthday.month,
+        newBirthday.year
       );
       newBirthday.id = bday['id'];
       this.birthdays.push(newBirthday);
     },
     deleteBirthday(frontId) {
-      const bday = this.birthdays.find((b) => b.frontId == frontId);
+      const bday = this.birthdays.find(b => b.frontId == frontId);
       const api = new BdaysAPI(this.baseUrl);
       api.delete(bday.id);
       this.birthdays = this.birthdays.filter(
-        (birthday) => birthday.frontId !== frontId
+        birthday => birthday.frontId !== frontId
       );
-    },
-  },
+    }
+  }
 };
 </script>
 

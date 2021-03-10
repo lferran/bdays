@@ -1,5 +1,4 @@
 export class BdaysAPI {
-
   constructor(baseUrl) {
     this.baseUrl = baseUrl;
   }
@@ -21,14 +20,19 @@ export class BdaysAPI {
     return bdays;
   }
 
-  add(bdayData) {
+  add(name, day, month, year) {
     var newBday = null;
-    fetch(this.baseUrl + "bday", {
+    fetch(this.baseUrl + 'bday', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(bdayData)
+      body: JSON.stringify({
+        name: name,
+        year: year,
+        month: month,
+        day: day
+      })
     })
       .then(response => {
         if (!response.ok) {

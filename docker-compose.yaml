@@ -1,8 +1,8 @@
 bdays:
   container_name: bdays
+  image: bdays:latest
   tty: true
   stdin_open: true
-  build: "."
   links:
     - pg
   ports:
