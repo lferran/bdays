@@ -5,6 +5,9 @@ simple app to get reminders about friend's birthdays
 
 ## Docker compose
 
+```
+docker-compose up
+```
 
 ## Docker development
 
