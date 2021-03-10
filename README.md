@@ -1,7 +1,5 @@
 # bdays
-simple app to get reminders about friend's birthdays
-
-
+simple app to keep track of friends & family birthdays
 
 ## Docker compose
 
@@ -11,7 +9,7 @@ docker-compose up
 
 ## Docker development
 
-Create a newtwork
+Create a docker network
 ```
 docker network create --driver bridge network-test
 ```
