@@ -7,13 +7,13 @@
     <ul>
       <birthday
         v-for="birthday in birthdays"
-        :key="birthday.id"
+        :key="birthday.frontId"
+        :front-id="birthday.frontId"
         :id="birthday.id"
         :name="birthday.name"
-        :phone-number="birthday.phone"
-        :email-address="birthday.email"
-        :is-favorite="birthday.isFavorite"
-        @toggle-favorite="toggleFavoriteStatus"
+        :year="birthday.year"
+        :month="birthday.month"
+        :day="birthday.day"
         @delete="deleteBirthday"
       ></birthday>
     </ul>
@@ -26,41 +26,39 @@ export default {
     return {
       birthdays: [
         {
-          id: 'manuel',
-          name: 'Manuel Lorenz',
-          phone: '0123 45678 90',
-          email: 'manuel@localhost.com',
-          isFavorite: true,
+          frontId: 'paulallamas',
+          id: 1,
+          name: 'Paula Llamas',
+          day: 6,
+          month: 5,
+          year: 1994,
         },
         {
-          id: 'julie',
-          name: 'Julie Jones',
-          phone: '0987 654421 21',
-          email: 'julie@localhost.com',
-          isFavorite: false,
+          frontId: 'ferranllamas',
+          id: 2,
+          name: 'Ferran Llamas',
+          day: 12,
+          month: 11,
+          year: 1991,
         },
       ],
     };
   },
   methods: {
-    toggleFavoriteStatus(birthdayId) {
-      const identifiedBirthday = this.birthdays.find(
-        (birthday) => birthday.id === birthdayId
-      );
-      identifiedBirthday.isFavorite = !identifiedBirthday.isFavorite;
-    },
-    addBirthday(name, phone, email) {
+    addBirthday(name, day, month, year) {
       const newBirthday = {
-        id: new Date().toISOString(),
+        frontId: new Date().toISOString(),
         name: name,
-        phone: phone,
-        email: email,
-        isFavorite: false,
+        day: day,
+        month: month,
+        year: year,
       };
       this.birthdays.push(newBirthday);
     },
-    deleteBirthday(birthdayId) {
-      this.birthdays = this.birthdays.filter((birthday) => birthday.id !== birthdayId);
+    deleteBirthday(birthdayFrontId) {
+      this.birthdays = this.birthdays.filter(
+        (birthday) => birthday.frontId !== birthdayFrontId
+      );
     },
   },
 };

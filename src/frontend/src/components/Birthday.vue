@@ -1,74 +1,57 @@
 <template>
   <li>
-    <h2>{{ name }} {{ isFavorite ? '(Favorite)' : ''}}</h2>
-    <button @click="toggleFavorite">Toggle Favorite</button>
-    <button @click="toggleDetails">{{ detailsAreVisible ? 'Hide' : 'Show' }} Details</button>
+    <h2>{{ name }}</h2>
+    <button @click="toggleDetails">
+      {{ detailsAreVisible ? 'Hide' : 'Show' }} Details
+    </button>
     <ul v-if="detailsAreVisible">
       <li>
-        <strong>Phone:</strong>
-        {{ phoneNumber }}
-      </li>
-      <li>
-        <strong>Email:</strong>
-        {{ emailAddress }}
+        <strong>Date of birth:</strong>
+        {{ day }}/{{ month }}/{{ year }}
       </li>
     </ul>
-    <button @click="$emit('delete', id)">Delete</button>
+    <button @click="$emit('delete', frontId)">Delete</button>
   </li>
 </template>
 
 <script>
 export default {
-  // props: ['name', 'phoneNumber', 'emailAddress', 'isFavorite'],
   props: {
-    id: {
+    frontId: {
       type: String,
-      required: true
+      required: true,
+    },
+    id: {
+      type: Number,
+      required: false,
     },
     name: {
       type: String,
       required: true,
     },
-    phoneNumber: {
-      type: String,
-      required: true
+    day: {
+      type: Number,
+      required: true,
     },
-    emailAddress: {
-      type: String,
-      required: true
+    month: {
+      type: Number,
+      required: true,
     },
-    isFavorite: {
-      type: Boolean,
-      required: false,
-      default: false,
-      // validator: function(value) {
-      //   return value === '1' || value === '0';
-      // }
+    year: {
+      type: Number,
+      required: true
     },
   },
-  emits: ['toggle-favorite', 'delete'],
-  // emits: {
-  //   'toggle-favorite': function(id) {
-  //     if (id) {
-  //       return true;
-  //     } else {
-  //       console.warn('Id is missing!');
-  //       return false;
-  //     }
-  //   } 
-  // },
+  emits: ['delete'],
   data() {
     return {
-      detailsAreVisible: false
+      detailsAreVisible: false,
     };
   },
   methods: {
     toggleDetails() {
       this.detailsAreVisible = !this.detailsAreVisible;
     },
-    toggleFavorite() {
-      this.$emit('toggle-favorite', this.id);
-    }
   },
 };
 </script>

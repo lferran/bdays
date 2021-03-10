@@ -5,15 +5,11 @@
       <input type="text" v-model="enteredName" />
     </div>
     <div>
-      <label>Phone</label>
-      <input type="tel" v-model="enteredPhone" />
+      <label>Date of birth</label>
+      <input type="date" v-model="enteredDate" />
     </div>
     <div>
-      <label>E-Mail</label>
-      <input type="email" v-model="enteredEmail" />
-    </div>
-    <div>
-      <button>Add Contact</button>
+      <button>Add Birthday</button>
     </div>
   </form>
 </template>
@@ -24,17 +20,18 @@ export default {
   data() {
     return {
       enteredName: '',
-      enteredPhone: '',
-      enteredEmail: '',
+      enteredDate: '',
     };
   },
   methods: {
     submitData() {
+      const theDate = new Date(this.enteredDate);
       this.$emit(
         'add-birthday',
         this.enteredName,
-        this.enteredPhone,
-        this.enteredEmail
+        theDate.getDate(),
+        theDate.getMonth() + 1,
+        theDate.getFullYear()
       );
     },
   },

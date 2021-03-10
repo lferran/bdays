@@ -1,13 +1,23 @@
 # bdays
 simple app to keep track of friends & family birthdays
 
-## Docker compose
+## Front-end
+
+```
+cd src/frontend
+npm install
+npm run serve
+```
+
+## Backend
+
+### Docker compose
 
 ```
 docker-compose up
 ```
 
-## Docker development
+### Docker development
 
 Create a docker network
 ```
