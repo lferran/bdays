@@ -3,29 +3,34 @@
     <header>
       <h1>Birthdays app</h1>
     </header>
-    <new-birthday @add-birthday="addBirthday"></new-birthday>
-    <ul>
-      <birthday
-        v-for="birthday in birthdays"
-        :key="birthday.frontId"
-        :front-id="birthday.frontId"
-        :id="birthday.id"
-        :name="birthday.name"
-        :year="birthday.year"
-        :month="birthday.month"
-        :day="birthday.day"
-        @delete="deleteBirthday"
-      ></birthday>
-    </ul>
+
+    <div id="addBday">
+      <h2>Add new birthday</h2>
+      <new-birthday @add-birthday="addBirthday"></new-birthday>
+    </div>
+
+    <div id="listBdays">
+      <h2>All birthdays</h2>
+      <table>
+        <birthday
+          v-for="birthday in birthdays"
+          :key="birthday.id"
+          :id="birthday.id"
+          :name="birthday.name"
+          :year="birthday.year"
+          :month="birthday.month"
+          :day="birthday.day"
+          @delete="deleteBirthday"
+        ></birthday>
+      </table>
+    </div>
   </section>
 </template>
 
 <script>
-import { BdaysAPI } from './components/BdaysAPI.js';
-
 export default {
   created() {
-    this.loadFriendsFromBackend();
+    this.loadBdaysFromBackend();
   },
   data() {
     return {
@@ -34,36 +39,67 @@ export default {
     };
   },
   methods: {
-    loadFriendsFromBackend() {
-      const api = new BdaysAPI(this.baseUrl);
-      var allofthem = api.listAll()
-      this.birthdays = allofthem;
+    loadBdaysFromBackend() {
+      // todo: add pagination / scrolling
+
+      fetch(this.baseUrl + 'bdays/list', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          limit: 100
+        })
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+        })
+        .then(data => {
+          for (const i in data) {
+            this.birthdays.push(data[i]);
+          }
+        });
     },
+
     addBirthday(name, day, month, year) {
-      const newBirthday = {
-        frontId: new Date().toISOString(),
-        name: name,
-        day: day,
-        month: month,
-        year: year
-      };
-      const api = new BdaysAPI(this.baseUrl);
-      const bday = api.add(
-        newBirthday.name,
-        newBirthday.day,
-        newBirthday.month,
-        newBirthday.year
-      );
-      newBirthday.id = bday['id'];
-      this.birthdays.push(newBirthday);
+      fetch(this.baseUrl + 'bday', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: name,
+          year: year,
+          month: month,
+          day: day
+        })
+      })
+        .then(response => {
+          if (!response.ok) {
+            console.log('Could not add birthday' + response);
+          } else {
+            return response.json();
+          }
+        })
+        .then(bday => {
+          this.birthdays.push(bday);
+        });
     },
-    deleteBirthday(frontId) {
-      const bday = this.birthdays.find(b => b.frontId == frontId);
-      const api = new BdaysAPI(this.baseUrl);
-      api.delete(bday.id);
-      this.birthdays = this.birthdays.filter(
-        birthday => birthday.frontId !== frontId
-      );
+
+    deleteBirthday(id) {
+      fetch(this.baseUrl + 'bday/' + id, {
+        method: 'DELETE'
+      }).then(response => {
+        if (!response.ok) {
+          console.log('Could not delete birthday' + response);
+        } else {
+          this.birthdays = this.birthdays.filter(
+            birthday => birthday.id !== id
+          );
+        }
+      });
     }
   }
 };
@@ -81,14 +117,12 @@ body {
 }
 header {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-  margin: 3rem auto;
-  border-radius: 10px;
+  border-radius: 0px;
   padding: 1rem;
-  background-color: #58004d;
+  background-color: #430058;
   color: white;
   text-align: center;
-  width: 90%;
-  max-width: 40rem;
+  width: 100%;
 }
 #app ul {
   margin: 0;
@@ -106,7 +140,7 @@ header {
   max-width: 40rem;
 }
 #app h2 {
-  font-size: 2rem;
+  font-size: 1rem;
   border-bottom: 4px solid #ccc;
   color: #58004d;
   margin: 0 0 1rem 0;
@@ -114,16 +148,16 @@ header {
 #app button {
   font: inherit;
   cursor: pointer;
-  border: 1px solid #ff0077;
-  background-color: #ff0077;
+  border: 1px solid #430058;
+  background-color: #430058;
   color: white;
   padding: 0.05rem 1rem;
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.26);
 }
 #app button:hover,
 #app button:active {
-  background-color: #ec3169;
-  border-color: #ec3169;
+  background-color: #875e94;
+  border-color: #430058;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.26);
 }
 #app input {
@@ -137,6 +171,7 @@ header {
   display: inline-block;
 }
 #app form div {
-  margin: 1rem 0;
+  margin: 0.7rem 0;
 }
 </style>
+

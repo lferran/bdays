@@ -9,7 +9,7 @@
       <input type="date" v-model="enteredDate" />
     </div>
     <div>
-      <button>Add Birthday</button>
+      <button>Add</button>
     </div>
   </form>
 </template>
@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       enteredName: '',
-      enteredDate: '',
+      enteredDate: ''
     };
   },
   methods: {
@@ -33,7 +33,7 @@ export default {
         theDate.getMonth() + 1,
         theDate.getFullYear()
       );
-    },
-  },
+    }
+  }
 };
 </script>

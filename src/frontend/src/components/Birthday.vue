@@ -1,57 +1,46 @@
 <template>
-  <li>
-    <h2>{{ name }}</h2>
-    <button @click="toggleDetails">
-      {{ detailsAreVisible ? 'Hide' : 'Show' }} Details
-    </button>
-    <ul v-if="detailsAreVisible">
-      <li>
-        <strong>Date of birth:</strong>
-        {{ day }}/{{ month }}/{{ year }}
-      </li>
-    </ul>
-    <button @click="$emit('delete', frontId)">Delete</button>
-  </li>
+  <tr>
+    <td>{{ name }}</td>
+    <td>{{ day }}/{{ month }}/{{ year }}</td>
+    <td><button @click="deleteBday(id)">Delete</button></td>
+  </tr>
 </template>
 
 <script>
 export default {
   props: {
-    frontId: {
-      type: String,
-      required: true,
-    },
     id: {
       type: Number,
-      required: false,
+      required: false
     },
     name: {
       type: String,
-      required: true,
+      required: true
     },
     day: {
       type: Number,
-      required: true,
+      required: true
     },
     month: {
       type: Number,
-      required: true,
+      required: true
     },
     year: {
       type: Number,
       required: true
-    },
+    }
   },
   emits: ['delete'],
   data() {
     return {
-      detailsAreVisible: false,
     };
   },
   methods: {
-    toggleDetails() {
-      this.detailsAreVisible = !this.detailsAreVisible;
-    },
-  },
+    deleteBday(id) {
+      if (confirm('Are you sure?')) {
+        this.$emit('delete', id);
+      }
+    }
+  }
 };
 </script>

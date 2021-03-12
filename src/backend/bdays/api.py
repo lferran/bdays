@@ -55,7 +55,7 @@ async def get_bday(bday_id: int):
     return BirthdaySchema.from_object(bday)
 
 
-@app.get("/bdays/list")
+@app.post("/bdays/list")
 async def list_bdays(pagination: Optional[PaginationSchema] = None):
     if pagination is None:
         pagination = {}
@@ -94,7 +94,7 @@ async def create_bday(bday: BirthdaySchema):
 
 
 @app.delete("/bday/{bday_id}")
-async def delete_bday():
+async def delete_bday(bday_id: int):
     await db.delete_bday_by_id(bday_id)
 
 
