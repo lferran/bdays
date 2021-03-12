@@ -36,7 +36,8 @@ export default {
   methods: {
     loadFriendsFromBackend() {
       const api = new BdaysAPI(this.baseUrl);
-      this.birthdays = api.listAll();
+      var allofthem = api.listAll()
+      this.birthdays = allofthem;
     },
     addBirthday(name, day, month, year) {
       const newBirthday = {

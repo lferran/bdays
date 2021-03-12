@@ -5,7 +5,7 @@ export class BdaysAPI {
 
   listAll() {
     // todo: add pagination
-    const bdays = [];
+
     fetch(this.baseUrl + 'bdays/list')
       .then(response => {
         if (response.ok) {
@@ -13,11 +13,13 @@ export class BdaysAPI {
         }
       })
       .then(data => {
+        var bdays = [];
         for (const i in data) {
           bdays.push(data[i]);
         }
+        return bdays;
       });
-    return bdays;
+
   }
 
   add(name, day, month, year) {
