@@ -4,30 +4,43 @@
       <h1>Birthdays app</h1>
     </header>
 
-    <div id="addBday">
-      <h2>Add new birthday</h2>
-      <new-birthday @add-birthday="addBirthday"></new-birthday>
-    </div>
+    <div class="container">
+      <div class="side-container">
+        <div class="addbday">
+          <h2>Add new birthday</h2>
+          <new-birthday @add-birthday="addBirthday"></new-birthday>
+        </div>
+      </div>
 
-    <div id="listBdays">
-      <h2>All birthdays</h2>
-      <table>
-        <birthday
-          v-for="birthday in birthdays"
-          :key="birthday.id"
-          :id="birthday.id"
-          :name="birthday.name"
-          :year="birthday.year"
-          :month="birthday.month"
-          :day="birthday.day"
-          @delete="deleteBirthday"
-        ></birthday>
-      </table>
+      <div class="bdayslist">
+        <h2>All birthdays</h2>
+        <table>
+          <tbody>
+            <birthday
+              v-for="birthday in visibleBirthdays"
+              :key="birthday.id"
+              :id="birthday.id"
+              :name="birthday.name"
+              :year="birthday.year"
+              :month="birthday.month"
+              :day="birthday.day"
+              @delete="deleteBirthday"
+            ></birthday>
+          </tbody>
+        </table>
+        <div class="searchbar">
+          <input class="searchinput" @keyup="updateSearchTerm" type="text" placeholder="Search.." />
+        </div>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
+function sortByName(array) {
+  return array.sort((a, b) => (a.name > b.name ? 1 : -1));
+}
+
 export default {
   created() {
     this.loadBdaysFromBackend();
@@ -35,10 +48,29 @@ export default {
   data() {
     return {
       baseUrl: 'http://localhost:8080/',
-      birthdays: []
+      allBirthdays: [],
+      enteredSearchTerm: ''
     };
   },
+  computed: {
+    visibleBirthdays: function() {
+      var bdays = [];
+      if (this.enteredSearchTerm == '') {
+        bdays = this.allBirthdays;
+      } else {
+        bdays = this.allBirthdays.filter(birthday =>
+          birthday.name
+            .toLowerCase()
+            .includes(this.enteredSearchTerm.toLowerCase())
+        );
+      }
+      return sortByName(bdays);
+    }
+  },
   methods: {
+    updateSearchTerm(event) {
+      this.enteredSearchTerm = event.srcElement.value;
+    },
     loadBdaysFromBackend() {
       // todo: add pagination / scrolling
 
@@ -58,7 +90,7 @@ export default {
         })
         .then(data => {
           for (const i in data) {
-            this.birthdays.push(data[i]);
+            this.allBirthdays.push(data[i]);
           }
         });
     },
@@ -84,7 +116,7 @@ export default {
           }
         })
         .then(bday => {
-          this.birthdays.push(bday);
+          this.allBirthdays.push(bday);
         });
     },
 
@@ -95,7 +127,7 @@ export default {
         if (!response.ok) {
           console.log('Could not delete birthday' + response);
         } else {
-          this.birthdays = this.birthdays.filter(
+          this.allBirthdays = this.allBirthdays.filter(
             birthday => birthday.id !== id
           );
         }
@@ -106,72 +138,89 @@ export default {
 </script>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+/* Header */
+
 html {
-  font-family: 'Jost', sans-serif;
+  font-family: 'Courier New', monospace;
 }
-body {
-  margin: 0;
-}
+
 header {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-  border-radius: 0px;
   padding: 1rem;
-  background-color: #430058;
-  color: white;
-  text-align: center;
+  background-color: #fed049;
+  color: #282846;
+  text-align: left;
   width: 100%;
 }
-#app ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-#app li,
-#app form {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-  margin: 1rem auto;
-  border-radius: 10px;
-  padding: 1rem;
-  text-align: center;
-  width: 90%;
-  max-width: 40rem;
-}
-#app h2 {
-  font-size: 1rem;
-  border-bottom: 4px solid #ccc;
-  color: #58004d;
-  margin: 0 0 1rem 0;
-}
-#app button {
-  font: inherit;
-  cursor: pointer;
-  border: 1px solid #430058;
-  background-color: #430058;
-  color: white;
-  padding: 0.05rem 1rem;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.26);
-}
-#app button:hover,
-#app button:active {
-  background-color: #875e94;
-  border-color: #430058;
-  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.26);
-}
-#app input {
-  font: inherit;
-  padding: 0.15rem;
-}
-#app label {
-  font-weight: bold;
-  margin-right: 1rem;
-  width: 7rem;
-  display: inline-block;
-}
-#app form div {
-  margin: 0.7rem 0;
-}
-</style>
 
+h1 {
+  font-size: 2em;
+}
+
+body,
+html {
+  margin: 0;
+}
+
+.container {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  color: #007580;
+  background-color: #d8ebe4;
+  width: 100%;
+  height: 1000px;
+  align-items: baseline;
+}
+
+.side-container {
+  width: 200px;
+  height: 20px;
+  margin-right: 40px;
+}
+
+input, button {
+  background-color:#f5f5f5;
+}
+
+.addbday {
+  padding: 1em;
+}
+
+.addbday label {
+  padding: 5px;
+}
+
+.addbday button {
+  margin-left: 5px;
+  margin-top: 10px;
+}
+
+.bdayslist {
+  width: 80%;
+}
+
+td {
+  padding: 0 20px;
+}
+
+tr:hover {background-color:#f5f5f5;}
+
+thead,
+tbody {
+  display: block;
+}
+
+tbody {
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.searchinput {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+</style>

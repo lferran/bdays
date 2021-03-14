@@ -4,6 +4,7 @@
       <label>Name</label>
       <input type="text" v-model="enteredName" />
     </div>
+    <br>
     <div>
       <label>Date of birth</label>
       <input type="date" v-model="enteredDate" />
