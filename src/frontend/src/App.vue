@@ -7,14 +7,22 @@
     <div class="container">
       <div class="side-container">
         <div class="addbday">
-          <h2>Add new birthday</h2>
+          <h2>Add</h2>
           <new-birthday @add-birthday="addBirthday"></new-birthday>
         </div>
       </div>
 
       <div class="bdayslist">
-        <h2>All birthdays</h2>
+        <h2>List</h2>
         <table>
+          <thead>
+            <tr>
+              <td>Name</td>
+              <td>Birth date</td>
+              <td>Age</td>
+              <td>Actions</td>
+            </tr>
+          </thead>
           <tbody>
             <birthday
               v-for="birthday in visibleBirthdays"
@@ -29,7 +37,23 @@
           </tbody>
         </table>
         <div class="searchbar">
-          <input class="searchinput" @keyup="updateSearchTerm" type="text" placeholder="Search.." />
+          <label for="searchinput">Filter by name:</label>
+          <input
+            id="searchingput"
+            class="searchinput"
+            @keyup="updateSearchTerm"
+            type="text"
+            placeholder="..."
+          />
+        </div>
+
+        <div class="chooseinput">
+          <label for="period">Getting older:</label>
+          <select @change="updatePeriod" id="period" name="period">
+            <option value="year">this year</option>
+            <option value="month">this month</option>
+            <option value="next-month">next month</option>
+          </select>
         </div>
       </div>
     </div>
@@ -49,7 +73,8 @@ export default {
     return {
       baseUrl: 'http://localhost:8080/',
       allBirthdays: [],
-      enteredSearchTerm: ''
+      enteredSearchTerm: '',
+      selectedPeriod: 'year'
     };
   },
   computed: {
@@ -58,16 +83,25 @@ export default {
       if (this.enteredSearchTerm == '') {
         bdays = this.allBirthdays;
       } else {
-        bdays = this.allBirthdays.filter(birthday =>
-          birthday.name
-            .toLowerCase()
-            .includes(this.enteredSearchTerm.toLowerCase())
+        bdays = this.allBirthdays.filter(b =>
+          b.name.toLowerCase().includes(this.enteredSearchTerm.toLowerCase())
         );
+      }
+
+      const current_month = new Date().getMonth() + 1;
+      const next_month = (current_month + 1) % 12;
+      if (this.selectedPeriod == 'month') {
+        bdays = bdays.filter(b => b.month == current_month);
+      } else if (this.selectedPeriod == 'next-month') {
+        bdays = bdays.filter(b => b.month == next_month);
       }
       return sortByName(bdays);
     }
   },
   methods: {
+    updatePeriod(event) {
+      this.selectedPeriod = event.srcElement.value;
+    },
     updateSearchTerm(event) {
       this.enteredSearchTerm = event.srcElement.value;
     },
@@ -180,8 +214,10 @@ html {
   margin-right: 40px;
 }
 
-input, button {
-  background-color:#f5f5f5;
+input,
+button,
+select {
+  background-color: #f5f5f5;
 }
 
 .addbday {
@@ -197,19 +233,21 @@ input, button {
   margin-top: 10px;
 }
 
-.bdayslist {
-  width: 80%;
-}
-
 td {
   padding: 0 20px;
 }
 
-tr:hover {background-color:#f5f5f5;}
+tbody tr:hover {
+  background-color: #f5f5f5;
+}
 
 thead,
 tbody {
-  display: block;
+  display: table-header-group;
+}
+
+thead {
+  font-weight: bold;
 }
 
 tbody {
@@ -222,5 +260,4 @@ tbody {
   margin-top: 10px;
   margin-left: 10px;
 }
-
 </style>

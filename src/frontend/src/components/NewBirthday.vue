@@ -10,7 +10,7 @@
       <input type="date" v-model="enteredDate" />
     </div>
     <div>
-      <button>Add</button>
+      <button>Submit</button>
     </div>
   </form>
 </template>
