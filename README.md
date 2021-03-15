@@ -1,5 +1,10 @@
 # bdays
-simple app to keep track of friends & family birthdays
+
+Simple toy app to keep track of friends & family birthdays.
+
+- Sqlalchemy and postgresql for storage
+- Fast-api and uvicorn for rest-api serving
+- VueJS front-end
 
 ## Front-end
 
