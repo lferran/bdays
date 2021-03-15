@@ -1,6 +1,9 @@
+
 # bdays
 
 Simple toy app to keep track of friends & family birthdays.
+
+![Screenshot from 2021-03-15 10-07-26](https://user-images.githubusercontent.com/11825427/111129387-53976d00-8576-11eb-8d76-756732c09881.png)
 
 - Sqlalchemy and postgresql for storage
 - Fast-api and uvicorn for rest-api serving
